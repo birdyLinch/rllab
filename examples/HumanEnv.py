@@ -21,16 +21,14 @@ class HumanEnv(Env):
         # Height at which to fail the episode
         self.y_threshold = 0.5
 
-        self.action_space = Box(low=-1.5, high=1.5, shape=(16,))
-        self.observation_space = Box(low=-1e6, hight=1e6, shape=(306,))
 
     @property
     def observation_space(self):
-        return self.observation_space
+        return Box(low=-1e6, high=1e6, shape=(306,))
 
     @property
     def action_space(self):
-        return self.action_space
+        return Box(low=-0.5, high=0.5, shape=(16,))
 
     def reset(self):
         # Reset the simulation
@@ -46,26 +44,27 @@ class HumanEnv(Env):
         while len(state) < stateSize:
             state += self.s.recv(1000)
         state = np.asarray([struct.unpack('f',state[i:i+4])[0] for i in range(0,len(state),4)])
+        self.state = state
+        # # Apply a random control to just have a new initialization every time
+        # c = np.random.normal(0.0, 0.2, 16)
+        # c = np.clip(c, -1.5, 1.5)
+        # buff = struct.pack('%sf' % len(c), *c)
+        # self.s.send(buff)
 
-        # Apply a random control to just have a new initialization every time
-        c = np.random.normal(0.0, 0.2, 16)
-        c = np.clip(c, -1.5, 1.5)
-        buff = struct.pack('%sf' % len(c), *c)
-        self.s.send(buff)
-
-        # Get the state
-        stateSize = self.s.recv(4);
-        stateSize = struct.unpack('i',stateSize)[0]
-        state = self.s.recv(1000)
-        while len(state) < stateSize:
-            state += self.s.recv(1000)
-        self.state = np.asarray([struct.unpack('f',state[i:i+4])[0] for i in range(0,len(state),4)])
+        # # Get the state
+        # stateSize = self.s.recv(4);
+        # stateSize = struct.unpack('i',stateSize)[0]
+        # state = self.s.recv(1000)
+        # while len(state) < stateSize:
+        #     state += self.s.recv(1000)
+        # self.state = np.asarray([struct.unpack('f',state[i:i+4])[0] for i in range(0,len(state),4)])
 
         self.steps_beyond_done = None
         return np.array(self.state)
 
     def step(self, action):
         assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
+        state = self.state
         
         # Apply the action
         c = np.asarray(action)
@@ -79,6 +78,8 @@ class HumanEnv(Env):
         while len(state) < stateSize:
             state += self.s.recv(1000)
         state = np.asarray([struct.unpack('f',state[i:i+4])[0] for i in range(0,len(state),4)])
+
+        self.state = state
 
         # Get the y position of the root joint
         y = state[3]
@@ -97,7 +98,8 @@ class HumanEnv(Env):
             reward = 0.0
 
         next_observation = np.array(self.state)
+        self.state = next_observation
         return Step(observation=next_observation, reward=reward, done=done)
 
     def render(self):
-        pass
+        print (self.state[0:4])
