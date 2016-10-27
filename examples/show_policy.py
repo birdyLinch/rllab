@@ -2,7 +2,9 @@ import pickle
 from rllab.policies.gaussian_mlp_policy import GaussianMLPPolicy
 from examples.HumanEnv import HumanEnv
 from rllab.envs.normalized_env import normalize
+from subprocess import Popen
 
+Popen(["App_ExampleBrowser"])
 policy = pickle.load(open("model/model1.pickle","rb"))
 env = normalize(HumanEnv())
 
