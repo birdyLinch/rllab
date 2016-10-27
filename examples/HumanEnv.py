@@ -2,7 +2,7 @@ from rllab.envs.base import Env
 from rllab.spaces import Box
 from rllab.envs.base import Step
 import numpy as np
-
+from rllab.core.serializable import Serializable
 import socket
 import struct
 import logging
@@ -11,20 +11,25 @@ logger = logging.getLogger(__name__)
 
 class HumanEnv(Env):
 
-    def __init__(self):
+    def __init__(self, log_dir=None, record_log=True):
+        Serializable.quick_init(self, locals())
         # Connect to the simulation in Bullet
-        HOST, PORT = 'localhost', 47138
+        self.HOST, self.PORT = 'localhost', 47138
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.connect((HOST, PORT))
+        self.s.connect((self.HOST, self.PORT))
         self.s.send(b'Hello!')
 
         # Height at which to fail the episode
         self.y_threshold = 0.5
 
+    def restore_socket(self):
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.connect((self.HOST, self.PORT))
+        self.s.send(b'Hello!')
 
     @property
     def observation_space(self):
-        return Box(low=-1e6, high=1e6, shape=(306,))
+        return Box(low=-1e6, high=1e6, shape=(26,))
 
     @property
     def action_space(self):
@@ -82,7 +87,7 @@ class HumanEnv(Env):
         self.state = state
 
         # Get the y position of the root joint
-        y = state[3]
+        y = state[1]
         done = y < self.y_threshold
 
         if not done:
