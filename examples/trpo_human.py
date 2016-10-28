@@ -6,24 +6,39 @@ from rllab.policies.gaussian_mlp_policy import GaussianMLPPolicy
 from rllab.misc.instrument import stub, run_experiment_lite
 import pickle
 from subprocess import Popen
+import time
+import os
+import signal
 
-Popen(["./HumanDemoNoGUI"])
+experiment_spec = "64X2_26D_NaiveReward"
+save_policy_every = 2
 
-env = normalize(HumanEnv())
-policy = GaussianMLPPolicy(
-    env_spec=env.spec,
-    hidden_sizes=(64, 64)
-)
+simulator =Popen(["./HumanDemoNoGUI"])
+time.sleep(3)
 
-baseline = LinearFeatureBaseline(env_spec=env.spec)
+try:
+    env = normalize(HumanEnv())
+    policy = GaussianMLPPolicy(
+        env_spec=env.spec,
+        hidden_sizes=(64, 64)
+    )
 
-algo = TRPO(
-    env=env,
-    policy=policy,
-    baseline=baseline,
-    n_itr=20000,
-)
+    baseline = LinearFeatureBaseline(env_spec=env.spec)
 
-algo.train(),
+    algo = TRPO(
+        env=env,
+        policy=policy,
+        baseline=baseline,
+        n_itr=10,
+        max_path_lenght=5000,
+        experiment_spec=experiment_spec,
+        save_policy_every=save_policy_every,
+    )
 
-pickle.dump(policy, open("model/model1.pickle","wb"))
+    algo.train(),
+
+    pickle.dump(policy, open("model/model1.pickle","wb"))
+except Exception as e:
+    pass
+
+os.killpg(os.getpgid(simulator.pid), signal.SIGTERM)

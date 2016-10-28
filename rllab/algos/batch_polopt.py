@@ -4,6 +4,7 @@ from rllab.sampler.base import BaseSampler
 import rllab.misc.logger as logger
 import rllab.plotter as plotter
 from rllab.policies.base import Policy
+import pickle
 
 
 class BatchSampler(BaseSampler):
@@ -60,6 +61,8 @@ class BatchPolopt(RLAlgorithm):
             whole_paths=True,
             sampler_cls=None,
             sampler_args=None,
+            save_policy_every=None,
+            experiment_spec=None,
             **kwargs
     ):
         """
@@ -103,6 +106,11 @@ class BatchPolopt(RLAlgorithm):
         if sampler_args is None:
             sampler_args = dict()
         self.sampler = sampler_cls(self, **sampler_args)
+        self.save_policy_every= save_policy_every
+        if experiment_spec==None:
+            self.experiment_spec=''
+        else:
+            self.experiment_spec=experiment_spec
 
     def start_worker(self):
         self.sampler.start_worker()
@@ -130,6 +138,9 @@ class BatchPolopt(RLAlgorithm):
                 logger.save_itr_params(itr, params)
                 logger.log("saved")
                 logger.dump_tabular(with_prefix=False)
+                if (self.save_policy_every != None):
+                    if (itr%self.save_policy_every ==0):
+                        pickle.dump(self.policy, open("model/"+self.experiment_spec+str(itr)+".pickle","wb"))
                 if self.plot:
                     self.update_plot()
                     if self.pause_for_plot:

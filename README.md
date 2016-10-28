@@ -3,7 +3,11 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/rllab/rllab/blob/master/LICENSE)
 [![Join the chat at https://gitter.im/rllab/rllab](https://badges.gitter.im/rllab/rllab.svg)](https://gitter.im/rllab/rllab?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-# rllab
+# rllab_modified
+
+This virsion added support for a specific HumanEnv.
+    Install rllab first
+    go to example/ , "python trpo_human.py" and "python show_policy.py"
 
 rllab is a framework for developing and evaluating reinforcement learning algorithms. It includes a wide range of continuous control tasks plus implementations of the following algorithms:
 
