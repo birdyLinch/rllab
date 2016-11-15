@@ -9,16 +9,19 @@ import time
 import os
 import signal
 
-simulator = Popen(["./App_ExampleBrowser"])
+# auto save config
+experiment_spec = "64X2_26D_NaiveReward"
+save_policy_every = 200
 
+# show result config
+iter_each_policy = 1
+max_path_len = 5000
+
+simulator = Popen(["./App_ExampleBrowser"])
 try:
     time.sleep(3)
     env = normalize(HumanEnv())
 
-    experiment_spec = "64X2_26D_NaiveReward"
-    save_policy_every = 2
-    iter_each_policy = 1
-    max_path_len = 5000
     exper_num = 0
 
     rewards = []
@@ -49,6 +52,8 @@ try:
             break
 
     all_rewards = np.array(all_rewards)
+    
+    # plot
     x = np.arange(0, exper_num*save_policy_every, save_policy_every)
     y = np.mean(all_rewards, axis=1)
     yerr = np.std(all_rewards, axis=1)

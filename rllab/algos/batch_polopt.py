@@ -63,6 +63,7 @@ class BatchPolopt(RLAlgorithm):
             sampler_args=None,
             save_policy_every=None,
             experiment_spec=None,
+            discriminator=None,
             **kwargs
     ):
         """
@@ -138,6 +139,11 @@ class BatchPolopt(RLAlgorithm):
                 logger.save_itr_params(itr, params)
                 logger.log("saved")
                 logger.dump_tabular(with_prefix=False)
+
+                # train discreminator
+                if self.discreminator!=None:
+                    self.discreminator.train(samples_data["paths"])
+
                 if (self.save_policy_every != None):
                     if (itr%self.save_policy_every ==0):
                         pickle.dump(self.policy, open("model/"+self.experiment_spec+str(itr)+".pickle","wb"))
