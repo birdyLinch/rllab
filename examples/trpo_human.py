@@ -17,6 +17,8 @@ import signal
 experiment_spec = "100X50X25_26D_NaiveReward_GAE"
 save_policy_every = 200
 
+from rllab.sampler import parallel_sampler
+parallel_sampler.initialize(n_parallel=4)
 
 simulator =Popen(["./HumanDemoNoGUI"])
 time.sleep(3)
