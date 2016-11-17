@@ -2,7 +2,7 @@ import lasagne.nonlinearities as NL
 
 from rllab.algos.trpo import TRPO
 from rllab.baselines.gaussian_mlp_baseline import GaussianMLPBaseline
-from examples.HumanEnv import HumanEnv
+from examples.HumanEnv_v2 import HumanEnv_v2
 from rllab.envs.normalized_env import normalize
 from rllab.policies.gaussian_mlp_policy import GaussianMLPPolicy
 from rllab.optimizers.conjugate_gradient_optimizer import ConjugateGradientOptimizer
@@ -14,22 +14,20 @@ import os
 import signal
 
 # auto save config
-experiment_spec = "100X50X25_26D_NaiveReward_GAE"
-save_policy_every = 200
+experiment_spec = "100X50X25_22D_PlainReward_GAE"
+save_policy_every = 50
 
 from rllab.sampler import parallel_sampler
-parallel_sampler.initialize(n_parallel=4)
+parallel_sampler.initialize(n_parallel=1)
 
 simulator =Popen(["./HumanDemoNoGUI"])
 time.sleep(3)
 
-
-
 try:
-    discriminator = GAN()
+    # discriminator = GAN()
 
     # baseline
-    env = normalize(HumanEnv(discriminator=None))
+    env = normalize(HumanEnv_v2(discriminator=None))
     # GAN imitaion
     # env = normalize(HumanEnv(discriminator=discriminator))
 
@@ -80,6 +78,6 @@ try:
 
     pickle.dump(policy, open("model/model1.pickle","wb"))
 except Exception as e:
-    pass
+    print(e)
 
 os.killpg(os.getpgid(simulator.pid), signal.SIGTERM)

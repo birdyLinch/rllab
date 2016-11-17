@@ -102,6 +102,7 @@ class BatchPolopt(RLAlgorithm):
         self.positive_adv = positive_adv
         self.store_paths = store_paths
         self.whole_paths = whole_paths
+        self.discriminator = discriminator
         if sampler_cls is None:
             sampler_cls = BatchSampler
         if sampler_args is None:
@@ -141,12 +142,13 @@ class BatchPolopt(RLAlgorithm):
                 logger.dump_tabular(with_prefix=False)
 
                 # train discreminator
-                if self.discreminator!=None:
-                    self.discreminator.train(samples_data["paths"])
+                if self.discriminator!=None:
+                    self.discriminator.train(samples_data["paths"])
 
                 if (self.save_policy_every != None):
                     if (itr%self.save_policy_every ==0):
-                        pickle.dump(self.policy, open("model/"+self.experiment_spec+str(itr)+".pickle","wb"))
+                        pickle.dump(self.policy, open("model/"+self.experiment_spec+str(itr)+"policy.pickle","wb"))
+                        pickle.dump(self.discriminator, open("model/"+self.experiment_spec+str(itr)+"discriminator.pickle","wb"))
                 if self.plot:
                     self.update_plot()
                     if self.pause_for_plot:

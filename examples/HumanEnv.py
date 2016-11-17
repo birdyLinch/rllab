@@ -109,8 +109,9 @@ class HumanEnv(Env):
         
         # add discrimination reward from mocap pose gan
         if (self.discriminator !=None):
-            self.discriminator.get_reward(next_observation)
-        
+            reward +=self.discriminator.get_reward(next_observation)
+             
+
         if not done:
             pass
         elif self.steps_beyond_done is None:

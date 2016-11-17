@@ -2,7 +2,11 @@
   <compiler coordinate="local" angle="radian" />
   <size njmax="200" nuser_geom="1" nstack="82825" />
   <default>
-    <joint limited="true" armature="1" damping="1" />
+    <!--   limited= 动作幅度限制是否奏效
+            armature= 对action的限制，可能是时平均，可能需要见效来体现我们算法的you shi
+            damping= 卡住joint的作用力，和角速度成正比
+        -->
+    <joint limited="true" armature="0" damping="1" />
     <geom condim="3" conaffinity="0" margin="0.1" friction="1.0 0.5 0.5" rgba="0.8 0.6 0.4 1" />
   </default>
   <option timestep="0.01" integrator="RK4" />
@@ -19,9 +23,9 @@
     <body name="torso" pos="0 0 1.4">
       <inertial pos="0 0 0.0403624" mass="8.32208" diaginertia="0.159056 0.147471 0.0330627" />
       <joint name="root" type="free" limited="false" pos="0 0 0" axis="0 0 1" margin="0.01" armature="0" damping="0" />
-      <geom name="torso1" type="capsule" size="0.07 0.07" pos="0 0 0" quat="0.707107 0.707107 0 0" user="0" />
+      <geom name="torso1" type="capsule" size="0.07 0.07" pos="0 0 0" quat="0.707107 0.707107 0 0" user="0" rgba='0.0 0.2 0.0 1'/>
       <geom name="head" type="sphere" size="0.09" pos="0 0 0.19" user="0" />
-      <geom name="uwaist" type="capsule" size="0.06 0.06" pos="0 0 -0.12" quat="0.707107 0.707107 0 0" user="0" />
+      <geom name="uwaist" type="capsule" size="0.06 0.06" pos="0 0 -0.12" quat="0.707107 0.707107 0 0" user="0" rgba='0.8 0.0 0.0 1'/>
       <body name="pelvis" pos="0 0 -0.425" quat="0.999998 0 -0.002 0">
         <inertial pos="-0.0148387 0 0.0387097" quat="0.997805 0 0.0662273 0" mass="7.88854" diaginertia="0.0795697 0.0619562 0.0449816" />
         <!-- <joint name="abdomen_z" type="hinge" pos="0 0 0.22" axis="0 0 1" stiffness="20" range="-0.785398 0.785398" margin="0.01" damping="3" /> -->

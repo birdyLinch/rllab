@@ -1,0 +1,20 @@
+MuJoCo Pro Trial license activation key, number 58864, type 5.
+
+Issued to Will Lin <will.c.lynch@gmail.com>.
+
+Expires December 15, 2016.
+
+This file activates MuJoCo Pro on a single computer with id:
+OSX_SP148DS8150P22F81A16ES81D_L4239
+
+Do not modify this file. Its entire content, including the
+plain text section, is used by the activation manager.
+
+1db98d83a62bef2c7137c12ff3ce85ac8f5731577c65b7e4ec1f696af382e3e7
+2c3a92a5bb48048ab93a97754f4e0c29b75372c3cb4aa26affbbc73a8d67a7cd
+73f574dc6f3148599538870af990d7c78f24bc301a354eeed66f6d921dbfbff0
+bcb29470db4cd5555905579b407b133129840d4fb08ac02d00e28c28df3964ba
+091aff4ecb7cd1c2b91858aec28c73773cf3a79f6aba1d00427aeb8d5101037b
+f77afcb111129556c9566ec41f1531f9cf73aaaaf56bede714f5da6feed09ec3
+ac6137002428cd16c0d5d0cf368b1f8e253c0456a83dd363fee9f06bda0052cb
+822d80cebb898f2351942a225358fc0abf9c3cceeec5a84dc1f16f64d359fafb

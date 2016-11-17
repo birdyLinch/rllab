@@ -10,11 +10,11 @@ import os
 import signal
 
 # auto save config
-experiment_spec = "64X2_26D_NaiveReward"
+experiment_spec = "100X50X25_26D_NaiveReward_GAE"
 save_policy_every = 200
 
 # show result config
-iter_each_policy = 1
+iter_each_policy = 10
 max_path_len = 5000
 
 simulator = Popen(["./App_ExampleBrowser"])
