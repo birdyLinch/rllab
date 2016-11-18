@@ -128,7 +128,7 @@ class ConjugateGradientOptimizer(Serializable):
             reg_coeff=1e-5,
             subsample_factor=1.,
             backtrack_ratio=0.8,
-            max_backtracks=15,
+            max_backtracks=30,
             accept_violation=False,
             hvp_approach=None,
             num_slices=1):
@@ -269,12 +269,18 @@ class ConjugateGradientOptimizer(Serializable):
 
         prev_param = np.copy(self._target.get_param_values(trainable=True))
         n_iter = 0
+        # least_constrant = 2000
         for n_iter, ratio in enumerate(self._backtrack_ratio ** np.arange(self._max_backtracks)):
             cur_step = ratio * flat_descent_step
             cur_param = prev_param - cur_step
             self._target.set_param_values(cur_param, trainable=True)
             loss, constraint_val = sliced_fun(
                 self._opt_fun["f_loss_constraint"], self._num_slices)(inputs, extra_inputs)
+            
+            # #test
+            # if least_constrant>constraint_val:
+            #     least_constrant=constraint_val
+            
             if loss < loss_before and constraint_val <= self._max_constraint_val:
                 break
         if (np.isnan(loss) or np.isnan(constraint_val) or loss >= loss_before or constraint_val >=
@@ -287,6 +293,7 @@ class ConjugateGradientOptimizer(Serializable):
                            self._constraint_name)
             if loss >= loss_before:
                 logger.log("Violated because loss not improving")
+                # logger.log("least constrant %d" % least_constrant)
             if constraint_val >= self._max_constraint_val:
                 logger.log(
                     "Violated because constraint %s is violated" % self._constraint_name)

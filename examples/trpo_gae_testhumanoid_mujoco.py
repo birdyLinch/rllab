@@ -6,12 +6,8 @@ from rllab.envs.mujoco.test_humanoid import TestHumanoidEnv
 from rllab.envs.normalized_env import normalize
 from rllab.policies.gaussian_mlp_policy import GaussianMLPPolicy
 from rllab.optimizers.conjugate_gradient_optimizer import ConjugateGradientOptimizer
-from GAN import GAN
+from examples.discriminator import Mlp_Discriminator
 import pickle
-from subprocess import Popen
-import time
-import os
-import signal
 
 # auto save config
 experiment_spec = "100X50X25_simplehumanoid_TRPO_GAE"
@@ -21,7 +17,7 @@ from rllab.sampler import parallel_sampler
 parallel_sampler.initialize(n_parallel=3)
 
 try:
-    # discriminator = GAN()
+    discriminator = Mlp_Discriminator(disc_window=2, iteration=3000,disc_joints_dim=56, hidden_sizes=(32, 32))
 
     # baseline
     env = normalize(TestHumanoidEnv())
