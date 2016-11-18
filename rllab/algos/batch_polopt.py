@@ -146,7 +146,7 @@ class BatchPolopt(RLAlgorithm):
                     self.discriminator.train(samples_data["paths"])
 
                 if (self.save_policy_every != None):
-                    if (self.discreminator!=None):
+                    if (self.discriminator!=None):
                         if (itr%self.save_policy_every ==0):
                             pickle.dump(self.policy, open("model/"+self.experiment_spec+str(itr)+"policy.pickle","wb"))
                             pickle.dump(self.discriminator, open("model/"+self.experiment_spec+str(itr)+"discriminator.pickle","wb"))
