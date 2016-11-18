@@ -49,7 +49,7 @@ class HumanEnv_v2(Env):
 
     @property
     def action_space(self):
-        return Box(low=-1.0, high=1.0, shape=(15,))
+        return Box(low=-0.3, high=0.3, shape=(15,))
 
     def process(self, state):
         mask = np.ones(self.dim).astype(bool)

@@ -23,25 +23,16 @@ from keras.layers.normalization import *
 from keras.optimizers import *
 import matplotlib as mpl
 mpl.use('TkAgg')
-import matplotlib.pyplot as plt
-import seaborn as sns
 from keras.models import Model
-#from IPython import display
-from keras.utils import np_utils
+
 import scipy.io as sio
 
 class GAN():
     def __init__(fileName='MocapData.mat'):
         data=sio.loadmat(fileName)['data'][0]
-        maxLength = 4000
-        #Xseq = np.zeros((len(data),maxLength,len(data[0][0])))
-        #for frame, x in zip(data, Xseq):
-        #    l = min(maxLength, len(frame))
-        #    x[:l] = np.asarray(frame[:l])
         X = np.concatenate([np.asarray(frame) for frame in data],0)
         usedDim = np.ones(X.shape[1]).astype('bool')
         usedDim[39:45] = False
-        rootMean = np.mean(X[:,39:45],0)
         X = X[:,usedDim]
         print(X.shape)
         self.mocap_pose = X
@@ -86,3 +77,6 @@ class GAN():
 
     def get_reward(single_pose):
         return self.forward(single_pose)*self.discriminator_reward_scale
+
+gan=GAN()
+

@@ -1,6 +1,6 @@
 import pickle
 from rllab.policies.gaussian_mlp_policy import GaussianMLPPolicy
-from examples.HumanEnv import HumanEnv
+from examples.HumanEnv_v2 import HumanEnv_v2
 from rllab.envs.normalized_env import normalize
 from subprocess import Popen
 import matplotlib.pyplot as plt
@@ -10,8 +10,9 @@ import os
 import signal
 
 # auto save config
-experiment_spec = "100X50X25_26D_NaiveReward_GAE"
-save_policy_every = 200
+experiment_spec = "100X50X25_22D_PlainReward_GAE"
+save_policy_every = 50
+discriminate = False
 
 # show result config
 iter_each_policy = 10
@@ -20,7 +21,7 @@ max_path_len = 5000
 simulator = Popen(["./App_ExampleBrowser"])
 try:
     time.sleep(3)
-    env = normalize(HumanEnv())
+    env = normalize(HumanEnv_v2())
 
     exper_num = 0
 
@@ -30,7 +31,13 @@ try:
     while True:
         try:
             itr_str = str((exper_num+1)*save_policy_every)
-            policy = pickle.load(open("model/"+experiment_spec+itr_str+".pickle","rb"))
+            
+            if discriminate:
+                discriminator = pickle.load(open("model/"+experiment_spec+itr_str+"discriminator.pickle","rb"))
+                policy = pickle.load(open("model/"+experiment_spec+itr_str+"policy.pickle","rb"))
+            else:    
+                policy = pickle.load(open("model/"+experiment_spec+itr_str+".pickle","rb"))
+            
             exper_num+=1
             tol_reward = 0
             for i in range(iter_each_policy):
@@ -49,6 +56,7 @@ try:
             all_rewards.append(rewards)
 
         except Exception as e:
+            print(e)
             break
 
     all_rewards = np.array(all_rewards)
@@ -61,6 +69,7 @@ try:
     plt.errorbar(x, y, xerr=0.0, yerr=yerr)
     plt.show()
 except Exception as e:
+    print(e)
     pass
 
 os.killpg(os.getpgid(simulator.pid), signal.SIGTERM)
