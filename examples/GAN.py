@@ -78,5 +78,3 @@ class GAN():
     def get_reward(single_pose):
         return self.forward(single_pose)*self.discriminator_reward_scale
 
-gan=GAN()
-
