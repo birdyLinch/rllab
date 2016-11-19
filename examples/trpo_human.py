@@ -6,7 +6,7 @@ from examples.HumanEnv_v2 import HumanEnv_v2
 from rllab.envs.normalized_env import normalize
 from rllab.policies.gaussian_mlp_policy import GaussianMLPPolicy
 from rllab.optimizers.conjugate_gradient_optimizer import ConjugateGradientOptimizer
-from examples.discriminator import Mlp_Discriminator
+from examples.discriminator_bullet import Mlp_Discriminator
 import pickle
 from subprocess import Popen
 import time
@@ -24,7 +24,7 @@ simulator =Popen(["./HumanDemoNoGUI"])
 time.sleep(3)
 
 try:
-    discriminator = Mlp_Discriminator(disc_window=2, iteration=3000,disc_joints_dim=56, hidden_sizes=(128, 64, 32))
+    discriminator = Mlp_Discriminator(disc_window=2, iteration=3000,disc_joints_dim=16, hidden_sizes=(128, 64, 32))
 
     # baseline
     env = normalize(HumanEnv_v2(discriminator=None), normalize_obs=True)
@@ -65,10 +65,10 @@ try:
         max_path_lenght=2000,
         experiment_spec=experiment_spec,
         save_policy_every=save_policy_every,
-        batch_size=10000,
+        batch_size=30000,
         discount=0.995,
         gae_lambda=0.98,
-        step_size=0.02,
+        step_size=0.01,
 
         # baseline
         discriminator=None,

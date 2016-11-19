@@ -12,7 +12,7 @@ import pickle
 # auto save config
 experiment_spec = "100X50X25_simplehumanoid_TRPO_GAE"
 save_policy_every = 200
-total_iter = 3000
+total_iter = 1
 
 from rllab.sampler import parallel_sampler
 parallel_sampler.initialize(n_parallel=3)
@@ -60,7 +60,7 @@ try:
         max_path_lenght=2000,
         experiment_spec=experiment_spec,
         save_policy_every=save_policy_every,
-        batch_size=50000,
+        batch_size=5,
         discount=0.995,
         gae_lambda=0.98,
 

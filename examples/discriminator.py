@@ -100,7 +100,7 @@ class Mlp_Discriminator(LasagnePowered):
             disc_mocap = self.get_disc_mocap(batch_mocap)
             X = np.vstack((disc_obs, disc_mocap))
             targets = np.zeros([2*self.batch_size, 1])
-            targets = targets[self.batch_size: -1]
+            targets[self.batch_size :]=1
             loss.append(self._f_disc_train(X, targets))
         logger.record_tabular("averageDiscriminatorLoss", np.mean(loss))
 

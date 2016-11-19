@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class HumanEnv_v2(Env):
 
-    def __init__(self, hold=1, alpha=0.8, log_dir=None, record_log=True, discriminator=None):
+    def __init__(self, window=1, hold=1, alpha=0.8, log_dir=None, record_log=True, discriminator=None):
         Serializable.quick_init(self, locals())
         
         # Connect to the simulation in Bullet
@@ -24,7 +24,7 @@ class HumanEnv_v2(Env):
         self.y_threshold = 0.5
 
         # Number of frames to concatenate together in the state
-        self.window = discriminator.disc_window
+        self.window = window
         self.dim = 25
         self.usedDim = self.process(np.ones(self.dim)).shape[0]
         self.state = np.zeros(self.usedDim*self.window)
@@ -37,6 +37,8 @@ class HumanEnv_v2(Env):
         self.a = np.zeros(15)
 
         self.discriminator=discriminator
+        if discriminator != None:
+            self.window=discriminator.disc_window
 
     def restore_socket(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -133,7 +135,7 @@ class HumanEnv_v2(Env):
             
             # add discrimination reward from mocap pose gan
             if (self.discriminator !=None):
-                reward += self.discriminator.get_a() * self.discriminator.get_reward(self.next_observation)
+                reward += self.discriminator.get_a() * self.discriminator.get_reward(self.state)
                 self.discriminator.inc_iter()
 
             self.lastX = x
