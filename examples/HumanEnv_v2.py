@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class HumanEnv_v2(Env):
 
-    def __init__(self, window=1, hold=1, alpha=0.8, log_dir=None, record_log=True, discriminator=None):
+    def __init__(self, hold=1, alpha=0.8, log_dir=None, record_log=True, discriminator=None):
         Serializable.quick_init(self, locals())
         
         # Connect to the simulation in Bullet
@@ -24,10 +24,10 @@ class HumanEnv_v2(Env):
         self.y_threshold = 0.5
 
         # Number of frames to concatenate together in the state
-        self.window = window
+        self.window = discriminator.disc_window
         self.dim = 25
         self.usedDim = self.process(np.ones(self.dim)).shape[0]
-        self.state = np.zeros(self.usedDim*window)
+        self.state = np.zeros(self.usedDim*self.window)
 
         # Number of frames to apply the same input
         self.hold = hold
@@ -133,7 +133,8 @@ class HumanEnv_v2(Env):
             
             # add discrimination reward from mocap pose gan
             if (self.discriminator !=None):
-                reward += self.discriminator.get_reward(next_observation)
+                reward += self.discriminator.get_a() * self.discriminator.get_reward(self.next_observation)
+                self.discriminator.inc_iter()
 
             self.lastX = x
         elif self.steps_beyond_done is None:

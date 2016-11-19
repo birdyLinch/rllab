@@ -68,7 +68,7 @@ try:
         batch_size=10000,
         discount=0.995,
         gae_lambda=0.98,
-        step_size=0.05,
+        step_size=0.02,
 
         # baseline
         discriminator=None,

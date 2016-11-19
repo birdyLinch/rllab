@@ -128,6 +128,16 @@ class BatchPolopt(RLAlgorithm):
         for itr in range(self.current_itr, self.n_itr):
             with logger.prefix('itr #%d | ' % itr):
                 paths = self.sampler.obtain_samples(itr)
+
+                # to see what's in path
+                # for path in paths:
+                #     try:
+                #         print(path['observations'])
+                #         print(path['observations'].shape)
+                #     except Exception as e:
+                #         print(e)
+
+
                 samples_data = self.sampler.process_samples(itr, paths)
                 self.log_diagnostics(paths)
                 self.optimize_policy(itr, samples_data)
@@ -143,7 +153,10 @@ class BatchPolopt(RLAlgorithm):
 
                 # train discreminator
                 if self.discriminator!=None:
-                    self.discriminator.train(samples_data["paths"])
+                    observations = []
+                    for path in paths:
+                        observations.append(path['observations'])
+                    self.discriminator.train(observations)
 
                 if (self.save_policy_every != None):
                     if (self.discriminator!=None):

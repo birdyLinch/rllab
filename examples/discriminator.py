@@ -19,16 +19,21 @@ class Mlp_Discriminator(LasagnePowered):
             iteration,
             a_max=0.7,
             a_min=0.0,
+            batch_size = 64,
+            iter_per_train = 10,
             decent_portion=0.8,
             hidden_sizes=(32, 32),
             hidden_nonlinearity=NL.tanh,
             output_nonlinearity=NL.tanh,
             disc_network=None,
-    ):
+    ):  
+        self.batch_size=64
+        self.iter_per_train=10
         self.disc_window = disc_window
         self.disc_joints_dim = disc_joints_dim
         self.disc_dim = self.disc_window*self.disc_joints_dim
         self.end_iter = int(iteration*decent_portion)
+        self.iter_count = 0
         out_dim = 1
         target_var = TT.ivector('targets')
 
@@ -71,17 +76,33 @@ class Mlp_Discriminator(LasagnePowered):
         self.data = self.load_data()
         self.a = np.linspace(a_min, a_max, self.end_iter)
 
-    def get_reward(self, disc_obs):
-        flat_obs = np.asarray(disc_obs).flatten()
-        assert(flat_obs.shape[0] == self.disc_dim)
-        reward = self._f_disc([flat_obs])
+    def get_reward(self, observation):
+        if(len(observation.shape)==1):
+            observation = observation.reshape((1, observation.shape[0]))
+        disc_ob = self.get_disc_obs(observation)
+        assert(disc_ob.shape[1] == self.disc_dim)
+        reward = self._f_disc([disc_ob])
+        
+        assert(isinstance(reward, float))
+        
         return reward
 
-    def train(self, disc_obs, targets):
+    def train(self, observations):
+        '''
+        observations: length trj_num list of np.array with shape (trj_length, dim)
+        '''
         logger.log("fitting discriminator...")
-        flat_obs = self.disc_space.flatten(disc_obs)
-        loss = self._f_disc_train(flat_obs, targets)
-        logger.record_tabular("DiscriminatorLoss", loss)
+        loss=[]
+        for i in range(self.iter_per_train):
+            batch_obs = self.get_batch_obs(observations, self.batch_size)
+            batch_mocap = self.get_batch_mocap(self.batch_size)
+            disc_obs = self.get_disc_obs(batch_obs)
+            disc_mocap = self.get_disc_mocap(batch_mocap)
+            X = np.vstack((disc_obs, disc_mocap))
+            targets = np.zeros([2*self.batch_size, 1])
+            targets = targets[self.batch_size: -1]
+            loss.append(self._f_disc_train(X, targets))
+        logger.record_tabular("averageDiscriminatorLoss", np.mean(loss))
 
     def load_data(self, fileName='MocapData.mat'):
         # TODO: X (n, dim) dim must equals to the disc_obs
@@ -93,18 +114,49 @@ class Mlp_Discriminator(LasagnePowered):
         assert(X.shape[1] == self.disc_joints_dim)
         return X
 
-    def get_batch(self, batch_size):
+    def get_batch_mocap(self, batch_size):
+        '''
+        return np.array of shape (batch_size, mocap_dim*window)
+        '''
         mask = np.random.randint(0, self.data.shape[0]-self.disc_window, size=batch_size)
-        tensor_list =[]
+        temp =[]
         for i in range(self.disc_window):
-            tensor_list.append(self.data[mask+i])
-        return np.hstack(tensor_list)
+            temp.append(self.data[mask+i])
+        return np.hstack(temp)
+
+    def get_disc_mocap(self, mocap_batch):
+        '''
+        param mocap_batch np.array of shape (batch_size, mocap_dim*window)
+        return np.array of ashape (batch_size, disc_dim)
+        '''
+        pass
 
     def inc_iter(self):
-        self.iteration+=1
+        self.iter_count+=1
 
     def get_a(self):
-        if self.iteration < self.end_iter:
-            return self.a[self.iteration]
+        if self.iter_count < self.end_iter:
+            return self.a[self.iter_count]
         else:
             return self.a[-1]
+
+    def get_batch_obs(self, observations, batch_size):
+        '''
+        params observations: length trj_num list of np.array with shape (trj_length, dim)
+        params batch_size: batch_size of obs
+        return a np.array with shape (batch_size, observation_dim)
+        '''
+        observations = np.vstack(observations)
+        mask = np.random.randint(0, observations.shape[0]-self.window, size=batch_size)
+        temp = []
+        for i in range(self.disc_window):
+            temp.append(self.data[mask+i])
+        return np.hstack(temp)
+
+
+    def get_disc_obs(self, observation):
+        """
+        param observation nparray with shape (n, window*obs_dim)
+        return observation nparray with shape(n, disc_dim)
+        """
+        pass
