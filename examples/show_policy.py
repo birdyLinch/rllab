@@ -11,7 +11,7 @@ import signal
 
 # auto save config
 experiment_spec = "100X50X25_22D_PlainReward_GAE"
-save_policy_every = 50
+save_policy_every = 2000
 discriminate = False
 
 # show result config

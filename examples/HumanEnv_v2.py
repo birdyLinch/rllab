@@ -37,7 +37,7 @@ class HumanEnv_v2(Env):
         self.a = np.zeros(15)
 
         self.discriminator=discriminator
-        if discriminator != None:
+        if (self.discriminator != None):
             self.window=discriminator.disc_window
 
     def restore_socket(self):
@@ -135,7 +135,8 @@ class HumanEnv_v2(Env):
             
             # add discrimination reward from mocap pose gan
             if (self.discriminator !=None):
-                reward += self.discriminator.get_a() * self.discriminator.get_reward(self.state)
+                a = self.discriminator.get_a()
+                reward = a* self.discriminator.get_reward(self.state)/0.1 + (1-a)*reward
                 self.discriminator.inc_iter()
 
             self.lastX = x

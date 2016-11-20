@@ -2,8 +2,11 @@ import lasagne.layers as L
 import lasagne.nonlinearities as NL
 import lasagne.init
 import theano.tensor as TT
+import theano
+import lasagne
 
 from rllab.core.lasagne_powered import LasagnePowered
+from rllab.core.serializable import Serializable
 from rllab.core.network import MLP
 from rllab.misc import ext
 from rllab.misc import logger
@@ -11,22 +14,24 @@ from rllab.misc import logger
 import scipy.io as sio
 import numpy as np
 
-class Mlp_Discriminator(LasagnePowered):
+class Mlp_Discriminator(LasagnePowered, Serializable):
     def __init__(
             self,
             disc_window,
             disc_joints_dim,
             iteration,
+            learning_rate=0.005,
             a_max=0.7,
             a_min=0.0,
             batch_size = 64,
-            iter_per_train = 10,
+            iter_per_train = 3,
             decent_portion=0.8,
             hidden_sizes=(32, 32),
             hidden_nonlinearity=NL.tanh,
             output_nonlinearity=NL.tanh,
             disc_network=None,
-    ):  
+    ):
+        Serializable.quick_init(self, locals())
         self.batch_size=64
         self.iter_per_train=10
         self.disc_window = disc_window
@@ -34,8 +39,9 @@ class Mlp_Discriminator(LasagnePowered):
         self.disc_dim = self.disc_window*self.disc_joints_dim
         self.end_iter = int(iteration*decent_portion)
         self.iter_count = 0
+        self.learning_rate = learning_rate
         out_dim = 1
-        target_var = TT.ivector('targets')
+        target_var = TT.imatrix('targets')
 
         # create network
         if disc_network is None:
@@ -64,8 +70,8 @@ class Mlp_Discriminator(LasagnePowered):
         )
         
         params = L.get_all_params(disc_network, trainable=True)
-        loss = lasagne.objectives.categorical_crossentropy(disc_var, target_var).mean()
-        updates = lasagne.updates.adam(loss, params, learning_rate=0.01)
+        loss = lasagne.objectives.squared_error(disc_var, target_var).mean()
+        updates = lasagne.updates.adam(loss, params, learning_rate=self.learning_rate)
         self._f_disc_train = ext.compile_function(
             inputs=[obs_var, target_var],
             outputs=[loss],
@@ -81,26 +87,26 @@ class Mlp_Discriminator(LasagnePowered):
             observation = observation.reshape((1, observation.shape[0]))
         disc_ob = self.get_disc_obs(observation)
         assert(disc_ob.shape[1] == self.disc_dim)
-        reward = self._f_disc([disc_ob])
-        
-        assert(isinstance(reward, float))
-        
-        return reward
+        reward = self._f_disc(disc_ob)[0]
+        return reward[0][0]
 
     def train(self, observations):
         '''
         observations: length trj_num list of np.array with shape (trj_length, dim)
         '''
+        #print("state len: ", len(observations))
         logger.log("fitting discriminator...")
         loss=[]
+
         for i in range(self.iter_per_train):
             batch_obs = self.get_batch_obs(observations, self.batch_size)
             batch_mocap = self.get_batch_mocap(self.batch_size)
             disc_obs = self.get_disc_obs(batch_obs)
-            disc_mocap = self.get_disc_mocap(batch_mocap)
+            disc_mocap = batch_mocap
             X = np.vstack((disc_obs, disc_mocap))
             targets = np.zeros([2*self.batch_size, 1])
             targets[self.batch_size :]=1
+
             loss.append(self._f_disc_train(X, targets))
         logger.record_tabular("averageDiscriminatorLoss", np.mean(loss))
 
@@ -124,15 +130,18 @@ class Mlp_Discriminator(LasagnePowered):
         temp =[]
         for i in range(self.disc_window):
             temp.append(self.data[mask+i])
-        return np.hstack(temp)
+        batch_mocap = np.hstack(temp)
+        assert(batch_mocap.shape[0]==batch_size)
+        assert(batch_mocap.shape[1]==self.disc_dim)
+        return batch_mocap
 
-    def get_disc_mocap(self, mocap_batch):
-        '''
-        param mocap_batch np.array of shape (batch_size, mocap_dim*window)
-        return np.array of ashape (batch_size, disc_dim)
-        '''
-        temp = mocap_batch[:, self.usedDim]
-        return temp
+    # def get_disc_mocap(self, mocap_batch):
+    #     '''
+    #     param mocap_batch np.array of shape (batch_size, mocap_dim*window)
+    #     return np.array of ashape (batch_size, disc_dim)
+    #     '''
+    #     temp = mocap_batch[:, self.usedDim]
+    #     return temp
 
     def inc_iter(self):
         self.iter_count+=1
@@ -150,11 +159,14 @@ class Mlp_Discriminator(LasagnePowered):
         return a np.array with shape (batch_size, observation_dim)
         '''
         observations = np.vstack(observations)
-        mask = np.random.randint(0, observations.shape[0]-self.window, size=batch_size)
-        temp = []
-        for i in range(self.disc_window):
-            temp.append(self.data[mask+i])
-        return np.hstack(temp)
+        mask = np.random.randint(0, observations.shape[0]-self.disc_window, size=batch_size)
+
+        batch_obs = observations[mask]
+        #print(batch_obs.shape)
+        assert(batch_obs.shape[0]==batch_size)
+        assert(len(batch_obs.shape)==2)
+
+        return batch_obs 
 
 
     def get_disc_obs(self, observation):
@@ -168,6 +180,7 @@ class Mlp_Discriminator(LasagnePowered):
     def convertToMocap(self, states):
 
         frames = []
+        # print(states.shape)
 
         # Write each frame
         for state,frame in zip(states,range(len(states))):

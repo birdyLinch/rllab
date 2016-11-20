@@ -163,8 +163,8 @@ class BatchPolopt(RLAlgorithm):
                         if (itr%self.save_policy_every ==0):
                             pickle.dump(self.policy, open("model/"+self.experiment_spec+str(itr)+"policy.pickle","wb"))
                             pickle.dump(self.discriminator, open("model/"+self.experiment_spec+str(itr)+"discriminator.pickle","wb"))
-                        else:
-                            pickle.dump(self.policy, open("model/"+self.experiment_spec+str(itr)+"policy.pickle","wb"))
+                    else:
+                        pickle.dump(self.policy, open("model/"+self.experiment_spec+str(itr)+".pickle","wb"))
                 if self.plot:
                     self.update_plot()
                     if self.pause_for_plot:

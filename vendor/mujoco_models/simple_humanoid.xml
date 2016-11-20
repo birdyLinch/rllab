@@ -125,4 +125,8 @@
     <motor joint='left_shoulder2' ctrlrange="-20 20" ctrllimited="true" />
     <!-- <motor joint='left_elbow'       ctrlrange="-20 20" ctrllimited="true"/> -->
   </actuator>
+    <sensor>
+    <!-- <jointpos joint='left_knee'  /> -->
+    <jointpos joint='right_knee'   />
+  </sensor>>
 </mujoco>

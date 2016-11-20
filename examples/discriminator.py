@@ -81,11 +81,8 @@ class Mlp_Discriminator(LasagnePowered):
             observation = observation.reshape((1, observation.shape[0]))
         disc_ob = self.get_disc_obs(observation)
         assert(disc_ob.shape[1] == self.disc_dim)
-        reward = self._f_disc([disc_ob])
-        
-        assert(isinstance(reward, float))
-        
-        return reward
+        reward = self._f_disc(disc_ob)[0]     
+        return reward[0][0]
 
     def train(self, observations):
         '''
