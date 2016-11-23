@@ -7,7 +7,6 @@ from rllab.misc import logger
 from rllab.misc import autoargs
 
 
-
 class SimpleHumanoidEnv(MujocoEnv, Serializable):
 
     FILE = 'simple_humanoid.xml'
@@ -36,7 +35,6 @@ class SimpleHumanoidEnv(MujocoEnv, Serializable):
 
     def get_current_obs(self):
         data = self.model.data
-        # print(data.cacc.shape)
         return np.concatenate([
             data.qpos.flat,
             data.qvel.flat,
