@@ -11,7 +11,7 @@ BIG = 1e6
 
 class SimpleHumanoidEnv(MujocoEnv, Serializable):
 
-    FILE = 'simple_humanoid.xml'
+    FILE = 'simple_humanoid_origin.xml'
 
     @autoargs.arg('vel_deviation_cost_coeff', type=float,
                   help='cost coefficient for velocity deviation')
@@ -98,11 +98,12 @@ class SimpleHumanoidEnv(MujocoEnv, Serializable):
                 impact_cost - vel_deviation_cost
         else:
             reward = lin_vel_reward + alive_bonus - ctrl_cost - \
-            impact_cost - np.clip(vel_deviation_cost, -self.velocity_clip, self.velocity_clip)
+            impact_cost - vel_deviation_cost
         
         if self.discriminator!=None:
-            a = self.discriminator.get_a()
-            reward = a* self.discriminator.get_reward(self.state)/0.5 + (1-a)*reward
+            if lin_vel_reward>=0.1:
+                a = self.discriminator.get_a()
+                reward = a* self.discriminator.get_reward(self.state) + reward
             self.discriminator.inc_iter()
 
         done = data.qpos[2] < 0.8 or data.qpos[2] > 2.0

@@ -6,7 +6,7 @@
             armature= 对action的限制，可能是时平均，可能需要见效来体现我们算法的you shi
             damping= 卡住joint的作用力，和角速度成正比
         -->
-    <joint limited="true" armature="0" damping="1" />
+    <joint limited="true" armature="1" damping="1" />
     <geom condim="3" conaffinity="0" margin="0.1" friction="1.0 0.5 0.5" rgba="0.8 0.6 0.4 1" />
   </default>
   <option timestep="0.01" integrator="RK4" />
@@ -37,7 +37,7 @@
           <inertial pos="0 0.005 -0.17" quat="0.999892 0.0147011 0 0" mass="5.37761" diaginertia="0.0792387 0.0792387 0.0113602" />
           <joint name="right_hip1" type="hinge" pos="0 0 0" axis="1 0 0" stiffness="10" range="-0.15 0.0872665" margin="0.01" />
           <!-- <joint name="right_hip2" type="hinge" pos="0 0 0" axis="0 0 1" stiffness="10" range="-0.3 0.3" margin="0.01" /> -->
-          <joint name="right_hip3" type="hinge" pos="0 0 0" axis="0 1 0" stiffness="20" range="-1.91986 0.174533" margin="0.01" />
+          <joint name="right_hip3" type="hinge" pos="0 0 0" axis="0 -1 0" stiffness="20" range="-0.174533 1.91986" margin="0.01" />
           <geom name="right_thigh1" type="capsule" size="0.065 0.170074" pos="0 0.005 -0.17" quat="0.999892 0.0147011 0 0" user="0" />
           <body name="right_shin" pos="0 0.01 -0.403">
             <inertial pos="0 0 -0.181" mass="3.10016" diaginertia="0.045501 0.045501 0.00372174" />
@@ -59,7 +59,7 @@
           <inertial pos="0 -0.005 -0.17" quat="0.999892 -0.0147011 0 0" mass="5.37761" diaginertia="0.0792387 0.0792387 0.0113602" />
           <joint name="left_hip1" type="hinge" pos="0 0 0" axis="-1 0 0" stiffness="10" range="-0.15 0.0872665" margin="0.01" />
           <!-- <joint name="left_hip2" type="hinge" pos="0 0 0" axis="0 0 -1" stiffness="10" range="-0.3 0.3" margin="0.01" /> -->
-          <joint name="left_hip3" type="hinge" pos="0 0 0" axis="0 1 0" stiffness="20" range="-1.91986 0.174533" margin="0.01" />
+          <joint name="left_hip3" type="hinge" pos="0 0 0" axis="0 -1 0" stiffness="20" range="-0.174533 1.91986" margin="0.01" />
           <geom name="left_thigh1" type="capsule" size="0.065 0.170074" pos="0 -0.005 -0.17" quat="0.999892 -0.0147011 0 0" user="0" />
           <body name="left_shin" pos="0 -0.01 -0.403">
             <inertial pos="0 0 -0.181" mass="3.10016" diaginertia="0.045501 0.045501 0.00372174" />

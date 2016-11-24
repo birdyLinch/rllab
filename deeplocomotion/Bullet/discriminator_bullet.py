@@ -207,13 +207,13 @@ class Mlp_Discriminator(LasagnePowered, Serializable):
             f[18:21] = [c*s[11],c*s[12],c*s[13]]
             #data['rtibia'] = [c*s[16]]
             #right knee angle
-            f[26] = c*s[14]
+            f[26] = -c*s[14]
             #data['lfemur'] = [c*s[9],c*s[10],c*s[11]]
             #left hip x,y,z rotation
             f[27:30] = [c*s[7],c*s[8],c*s[9]]
             #data['ltibia'] = [c*s[12]]
             #left knee angle
-            f[38] = c*s[10]
+            f[38] = -c*s[10]
 
             frames.append(f)
         

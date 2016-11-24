@@ -38,3 +38,5 @@ rllab/config_personal.py
 *.swp
 sandbox
 examples/model
+deeplocomotion/Mujoco/simple/TrpoGAE/model
+deeplocomotion/Mujoco/simple/GANimitation/model

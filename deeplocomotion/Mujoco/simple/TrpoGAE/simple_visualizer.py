@@ -6,16 +6,16 @@ import matplotlib.pyplot as plt
 
 # auto save config
 debug_env = False
-experiment_spec = "100X50X25*2_10000|"
-save_policy_every = 25
-obs_window = 4
+experiment_spec = "normalize_obs_100X50X25*2_10000|"
+save_policy_every = 50
+obs_window = 3
 
 # show result config
 iter_each_policy = 10
 max_path_len = 5000
 
 # test env
-env = normalize(SimpleHumanoidEnv(window=4))
+env = normalize(SimpleHumanoidEnv(window=obs_window), normalize_obs=True)
 
 #temps
 exper_num = 0

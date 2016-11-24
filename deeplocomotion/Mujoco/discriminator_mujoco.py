@@ -117,7 +117,9 @@ class Mlp_Discriminator(LasagnePowered, Serializable):
         # usedDim = np.ones(X.shape[1]).astype('bool')
         # usedDim[39:45] = False
         # usedDim = sio.loadmat('limbMask.mat')['mask'][0].astype(bool)
-        self.usedDim = [4,5,19,20,26,28,29,38,51,52]
+        #self.usedDim = [4,5,19,20,26,28,29,38,51,52]
+        #only knee
+        self.usedDim = [26,38]
         usedDim = self.usedDim
         X = X[:,usedDim]
         assert(X.shape[1] == self.disc_joints_dim)
@@ -134,6 +136,7 @@ class Mlp_Discriminator(LasagnePowered, Serializable):
         batch_mocap = np.hstack(temp)
         assert(batch_mocap.shape[0]==batch_size)
         assert(batch_mocap.shape[1]==self.disc_dim)
+        #print(batch_mocap[10])
         return batch_mocap
 
     # def get_disc_mocap(self, mocap_batch):

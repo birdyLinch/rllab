@@ -9,7 +9,7 @@ from rllab.misc import autoargs
 
 class SimpleHumanoidEnv(MujocoEnv, Serializable):
 
-    FILE = 'simple_humanoid.xml'
+    FILE = 'simple_humanoid_origin.xml'
 
     @autoargs.arg('vel_deviation_cost_coeff', type=float,
                   help='cost coefficient for velocity deviation')

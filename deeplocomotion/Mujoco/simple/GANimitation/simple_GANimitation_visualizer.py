@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # auto save config
-debug_env = True
+debug_env = False
 experiment_spec = "100X50X25*2+64X32X32_a(0.02-0.1)_10000|"
 obs_window = 4
-save_policy_every = 0
+save_policy_every = 75
 
 # show result config
 iter_each_policy = 50
