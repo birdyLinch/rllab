@@ -7,15 +7,17 @@ import numpy as np
 # auto save config
 debug_env = False
 experiment_spec = "100X50X25*2+64X32X32_a(0.02-0.1)_10000|"
-obs_window = 4
-save_policy_every = 75
+obs_window = 3
+save_policy_every = 25
+normalized_obs=True
 
 # show result config
-iter_each_policy = 50
+iter_each_policy = 25
 max_path_len = 5000
 
 # test env
-env = normalize(SimpleHumanoidEnv(window=obs_window))
+if not normalized_obs:
+    env = normalize(SimpleHumanoidEnv(window=obs_window), normalized_obs=normalized_obs)
 
 exper_num = 0
 
@@ -26,6 +28,13 @@ while True:
     try:
         if not debug_env:
             itr_str = str((exper_num+1)*save_policy_every)
+            if normalized_obs:
+                lis = pickle.load(open("model/"+experiment_spec+itr_str+"env.pickle","rb"))
+                env.set_state(lis)
+                print("mean")
+                print(env._obs_mean)
+                print("var")
+                print(env._obs_var)
             policy = pickle.load(open("model/"+experiment_spec+itr_str+"policy.pickle","rb"))
         exper_num+=1
         tol_reward = 0

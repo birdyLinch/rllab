@@ -94,8 +94,9 @@ class SimpleHumanoidEnv(MujocoEnv, Serializable):
         vel_deviation_cost = 0.5 * self.vel_deviation_cost_coeff * np.sum(
             np.square(comvel[1:]))
         if (self.velocity_clip==None or self.velocity_clip<=0):
-            reward = lin_vel_reward + alive_bonus - ctrl_cost - \
-                impact_cost - vel_deviation_cost
+            reward = lin_vel_reward + alive_bonus - ctrl_cost
+            #   - impact_cost - vel_deviation_cost
+            reward = lin_vel_reward
         else:
             reward = lin_vel_reward + alive_bonus - ctrl_cost - \
             impact_cost - vel_deviation_cost

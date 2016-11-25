@@ -10,21 +10,21 @@ from rllab.optimizers.conjugate_gradient_optimizer import ConjugateGradientOptim
 from deeplocomotion.Mujoco.discriminator_mujoco import Mlp_Discriminator
 
 # config
-experiment_spec = "gru_hidden64_64X32X32_a(0.02-0.1)_10000|"
+experiment_spec = "8X8_a(0.02-0.1)_10000|"
 save_policy_every = 25
-obs_window = 4
+obs_window = 3
 total_iter = 10000
 max_path_length=5000
 batch_size = 30000
-Policy="GRU"
+Policy="MLP"
 
 from rllab.sampler import parallel_sampler
 parallel_sampler.initialize(n_parallel=10)
 
-discriminator = Mlp_Discriminator( a_max=0.12, a_min=0.08, disc_window=obs_window, iteration=total_iter, disc_joints_dim=2, hidden_sizes=(8, 8))
+discriminator = Mlp_Discriminator( a_max=0.2, a_min=0.2, disc_window=obs_window, iteration=total_iter, disc_joints_dim=2, hidden_sizes=(8, 8))
 
 # initializing
-env = normalize(SimpleHumanoidEnv(discriminator=discriminator, window=obs_window))
+env = normalize(SimpleHumanoidEnv(discriminator=discriminator, window=obs_window), normalize_obs=True)
 
 if Policy=="MLP":
     policy = GaussianMLPPolicy(

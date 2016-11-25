@@ -3,19 +3,21 @@ from rllab.envs.mujoco.GANimitation.simple_humanoid_env import SimpleHumanoidEnv
 from rllab.envs.normalized_env import normalize
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
 # auto save config
 debug_env = False
 experiment_spec = "normalize_obs_100X50X25*2_10000|"
 save_policy_every = 50
 obs_window = 3
+normalized_obs=True
 
 # show result config
-iter_each_policy = 10
+iter_each_policy = 1000
 max_path_len = 5000
 
 # test env
-env = normalize(SimpleHumanoidEnv(window=obs_window), normalize_obs=True)
+env = normalize(SimpleHumanoidEnv(window=obs_window), normalize_obs=normalized_obs)
 
 #temps
 exper_num = 0
@@ -25,6 +27,13 @@ all_rewards = []
 while True:
     try:
         itr_str = str((exper_num+1)*save_policy_every)
+        if normalized_obs:
+            lis = pickle.load(open("model/"+experiment_spec+itr_str+"env.pickle","rb"))
+            env.set_state(lis)
+            print("mean")
+            print(env._obs_mean)
+            print("var")
+            print(env._obs_var)
         policy = pickle.load(open("model/"+experiment_spec+itr_str+".pickle","rb"))
         exper_num+=1
         tol_reward = 0
@@ -49,7 +58,7 @@ while True:
 
     except Exception as e:
         print(e)
-        break
+        sys.exit(0)
 
 all_rewards = np.array(all_rewards)
 

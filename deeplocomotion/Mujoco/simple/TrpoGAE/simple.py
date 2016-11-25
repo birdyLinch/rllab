@@ -9,19 +9,19 @@ from rllab.optimizers.conjugate_gradient_optimizer import ConjugateGradientOptim
 from rllab.policies.gaussian_gru_policy import GaussianGRUPolicy
 
 # auto save config
-experiment_spec = "gru_hidden64_10000_verbose_state|"
-save_policy_every = 150
-total_iter = 10000
-window=4
+experiment_spec = "normalize_obs_100X50X25*2_10000|"
+save_policy_every = 25
+total_iter = 5000
+window=3
 max_path_length=5000
-batch_size=30000
-Policy="GRU"
+batch_size=5000
+Policy="MLP"
 
 from rllab.sampler import parallel_sampler
 parallel_sampler.initialize(n_parallel=3)
 
 
-env = normalize(SimpleHumanoidEnv(window=4), normalize_obs=True)
+env = normalize(SimpleHumanoidEnv(window=window), normalize_obs=True)
 
 if Policy=="MLP":
     policy = GaussianMLPPolicy(

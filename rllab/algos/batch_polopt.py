@@ -3,7 +3,7 @@ from rllab.sampler import parallel_sampler
 from rllab.sampler.base import BaseSampler
 import rllab.misc.logger as logger
 import rllab.plotter as plotter
-from rllab.policies.base import Policy
+import numpy as np
 import pickle
 
 
@@ -151,16 +151,30 @@ class BatchPolopt(RLAlgorithm):
                 logger.log("saved")
                 logger.dump_tabular(with_prefix=False)
 
+
                 # train discreminator
-                if self.discriminator!=None:
+                if self.discriminator!=None :
                     observations = []
                     for path in paths:
                         observations.append(path['observations'])
                     self.discriminator.train(observations)
 
-                if (self.save_policy_every != None):
+                if self.save_policy_every != None and itr%self.save_policy_every ==0:
+                    if self.env._normalize_obs:
+                        obs_mean=np.zeros(self.env.observation_space.flat_dim)
+                        obs_var=np.zeros(self.env.observation_space.flat_dim)
+                        path_n = len(paths)
+                        try:
+                            for idx, path in enumerate(paths):
+                                obs_mean += path["env_state"][0]/path_n
+                                obs_var += path["env_state"][1]/path_n
+                            pickle.dump([obs_mean, obs_var], open("model/"+self.experiment_spec+str(itr)+"env.pickle", "wb"))
+                        except Exception as e:
+                            print("ERROR: can not dump env")
+                            print(e)
+
                     if (self.discriminator!=None):
-                        if (itr%self.save_policy_every ==0):
+                        
                             pickle.dump(self.policy, open("model/"+self.experiment_spec+str(itr)+"policy.pickle","wb"))
                             pickle.dump(self.discriminator, open("model/"+self.experiment_spec+str(itr)+"discriminator.pickle","wb"))
                     else:

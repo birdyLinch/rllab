@@ -12,6 +12,7 @@ class NormalizedEnv(ProxyEnv, Serializable):
     def __init__(
             self,
             env,
+            save_policy_every=None,
             scale_reward=1.,
             normalize_obs=False,
             normalize_reward=False,
@@ -93,6 +94,15 @@ class NormalizedEnv(ProxyEnv, Serializable):
 
     def __str__(self):
         return "Normalized: %s" % self._wrapped_env
+
+    def get_state(self):
+        print([self._obs_mean, self._obs_var, self.obs_alpha])
+        return [self._obs_mean, self._obs_var, self.obs_alpha]
+
+    def set_state(self, lis):
+        self._obs_mean=lis[0]
+        self._obs_var=lis[1]
+        self._obs_alpha=lis[2]
 
     # def log_diagnostics(self, paths):
     #     print "Obs mean:", self._obs_mean
